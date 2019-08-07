@@ -19,16 +19,6 @@
       "metadata": {
         "description": "Password of the SQL admin account. Only required if a new Azure SQL server has to be deployed. Leave blank to use existing Azure SQL Server."
       }
-    },
-
-    "partnerId": {
-      "type": "string",
-      "defaultValue": "pid-f498bab0-93f2-5083-86e4-53fe73edbc2a", // Analytics Creator Partner ID
-      "minLength": 0,
-      "maxLength": 40,
-      "metadata": {
-        "description": "The ID of the partner to be assigned to the SQL database. Starting with 'pid-...'"
-      }
     }
   },
   "variables": {
@@ -43,13 +33,14 @@
     "repositoryDbName": "[concat('repo_', parameters('repositoryName'))]",
     "dwhDbName": "[concat('dwh_', parameters('repositoryName'))]",
 
-    "apiVersion": "2017-10-01-preview"
+    "apiVersion": "2017-10-01-preview",
+
+    "partnerId": "pid-f498bab0-93f2-5083-86e4-53fe73edbc2a"
   },
   "resources": [
     {
-      "condition": "[and(equals(length(parameters('partnerId')), 40), equals(toLower(substring(parameters('partnerId'), 0, 4)), 'pid-'))]",
       "apiVersion": "2018-02-01",
-      "name": "[parameters('partnerId')]",
+      "name": "[variables('partnerId')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -93,7 +84,7 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "collation": "SQL_Latin1_General_CP1_CI_AS",
-        "maxSizeBytes": 1073741824, // 1 GB
+        "maxSizeBytes": 1073741824, 
         "sampleName": "",
         "zoneRedundant": false,
         "licenseType": ""
@@ -114,7 +105,7 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "collation": "SQL_Latin1_General_CP1_CI_AS",
-        "maxSizeBytes": 52428800, // 50 MB - Metadata only
+        "maxSizeBytes": 52428800, 
         "sampleName": "",
         "zoneRedundant": false,
         "licenseType": ""

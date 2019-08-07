@@ -3,20 +3,14 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "serverName": {
-      "value": "gbtestsql01"
+      "value": "mySqlServer"
     },
 
     "sqlAdminName": {
-      "value": "localadmin"
+      "value": "myAdmin"
     },
     "sqlAdminPassword": {
-      "value": "QUqualquer55__"
-    },
-
-
-
-    "partnerId": {
-      "value": "pid-f498bab0-93f2-5083-86e4-53fe73edbc2a"
+      "value": "Pass@word1234"
     }
   }
 }

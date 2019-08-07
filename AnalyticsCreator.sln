@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "DSL.AzureResources", "DSL.AzureResources.deployproj", "{F1349769-CAC3-4B26-9DD7-6072E59A8F6E}"
-EndProject
 Project("{151D2E53-A2C4-4D7D-83FE-D05416EBD58E}") = "AnalyticsCreator", "AnalyticsCreator.deployproj", "{5C81C400-6ED8-45A2-A5D5-70464F7377C0}"
 EndProject
 Global

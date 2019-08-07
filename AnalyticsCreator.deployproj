@@ -9,6 +9,7 @@
   <ItemGroup>
     <None Include="ProdDB\azuredeploy.parameters.json" />
     <None Include="ProdDB\azuredeploy.json" />
+    <None Include="README.md" />
     <None Include="Repository\azuredeploy.parameters.json" />
     <None Include="Repository\azuredeploy.json" />
     <None Include="Scripts\Deploy.ps1" />

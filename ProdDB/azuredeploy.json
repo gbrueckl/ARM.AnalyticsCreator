@@ -39,15 +39,6 @@
     "zoneRedundant": {
       "type": "bool",
       "defaultValue": false
-    },
-    "partnerId": {
-      "type": "string",
-      "defaultValue": "pid-f498bab0-93f2-5083-86e4-53fe73edbc2a", // Analytics Creator Partner ID
-      "minLength": 0,
-      "maxLength": 40,
-      "metadata": {
-        "description": "The ID of the partner to be assigned to the SQL database. Starting with 'pid-...'"
-      }
     }
   },
   "variables": {
@@ -57,13 +48,14 @@
       "P": "Premium"
     },
 
-    "apiVersion": "2017-10-01-preview"
+    "apiVersion": "2017-10-01-preview",
+
+    "partnerId": "pid-f498bab0-93f2-5083-86e4-53fe73edbc2a"
   },
   "resources": [
     {
-      "condition": "[and(equals(length(parameters('partnerId')), 40), equals(toLower(substring(parameters('partnerId'), 0, 4)), 'pid-'))]",
       "apiVersion": "2018-02-01",
-      "name": "[parameters('partnerId')]",
+      "name": "[variables('partnerId')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
