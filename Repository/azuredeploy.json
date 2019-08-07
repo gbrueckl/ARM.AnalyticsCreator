@@ -1,0 +1,146 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serverName": {
+      "type": "string"
+    },
+    "repositoryName": {
+      "type": "string"
+    },
+    "sqlAdminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Username of the SQL admin account. Only required if a new Azure SQL server has to be deployed. Leave blank to use existing Azure SQL Server."
+      }
+    },
+    "sqlAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password of the SQL admin account. Only required if a new Azure SQL server has to be deployed. Leave blank to use existing Azure SQL Server."
+      }
+    },
+
+    "partnerId": {
+      "type": "string",
+      "defaultValue": "pid-f498bab0-93f2-5083-86e4-53fe73edbc2a", // Analytics Creator Partner ID
+      "minLength": 0,
+      "maxLength": 40,
+      "metadata": {
+        "description": "The ID of the partner to be assigned to the SQL database. Starting with 'pid-...'"
+      }
+    }
+  },
+  "variables": {
+    "sku": "Basic",
+
+    "tierMapping": {
+      "B": "Basic",
+      "S": "Standard",
+      "P": "Premium"
+    },
+
+    "repositoryDbName": "[concat('repo_', parameters('repositoryName'))]",
+    "dwhDbName": "[concat('dwh_', parameters('repositoryName'))]",
+
+    "apiVersion": "2017-10-01-preview"
+  },
+  "resources": [
+    {
+      "condition": "[and(equals(length(parameters('partnerId')), 40), equals(toLower(substring(parameters('partnerId'), 0, 4)), 'pid-'))]",
+      "apiVersion": "2018-02-01",
+      "name": "[parameters('partnerId')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": []
+        }
+      }
+    },
+    {
+      "condition": "[and(greater(length(parameters('sqlAdminUsername')), 5), greater(length(parameters('sqlAdminPassword')), 5))]",
+      "type": "Microsoft.Sql/servers",
+      "name": "[parameters('serverName')]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[resourceGroup().location]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "administratorLogin": "[parameters('sqlAdminUsername')]",
+        "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
+        "version": "12.0"
+      }
+    },
+    {
+      "condition": "[and(greater(length(parameters('sqlAdminUsername')), 5), greater(length(parameters('sqlAdminPassword')), 5))]",
+      "type": "Microsoft.Sql/servers/databases",
+      "name": "[concat(parameters('serverName'), '/', 'master')]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers/', parameters('serverName'))]"
+      ],
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases",
+      "name": "[concat(parameters('serverName'), '/', variables('repositoryDbName'))]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "collation": "SQL_Latin1_General_CP1_CI_AS",
+        "maxSizeBytes": 1073741824, // 1 GB
+        "sampleName": "",
+        "zoneRedundant": false,
+        "licenseType": ""
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers/', parameters('serverName'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('serverName'), 'master')]"
+      ],
+      "sku": {
+        "name": "[variables('sku')]",
+        "tier": "[variables('tierMapping')[first(variables('sku'))]]"
+      }
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases",
+      "name": "[concat(parameters('serverName'), '/', variables('dwhDbName'))]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "collation": "SQL_Latin1_General_CP1_CI_AS",
+        "maxSizeBytes": 52428800, // 50 MB - Metadata only
+        "sampleName": "",
+        "zoneRedundant": false,
+        "licenseType": ""
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers/', parameters('serverName'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('serverName'), 'master')]"
+      ],
+      "sku": {
+        "name": "[variables('sku')]",
+        "tier": "[variables('tierMapping')[first(variables('sku'))]]"
+      }
+    }
+  ],
+  "outputs": {
+    "sqlServerName": {
+      "value": "[parameters('serverName')]",
+      "type": "string"
+    },
+    "dwhDbName": {
+      "value": "[variables('dwhDbName')]",
+      "type": "string"
+    },
+    "repositoryDbName": {
+      "value": "[variables('repositoryDbName')]",
+      "type": "string"
+    }
+  }
+}

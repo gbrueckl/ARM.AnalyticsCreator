@@ -1,0 +1,135 @@
+﻿{
+  "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serverName": {
+      "type": "string"
+    },
+    "sqlAdminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "Username of the SQL admin account. Only required if a new Azure SQL server has to be deployed. Leave blank to use existing Azure SQL Server."
+      }
+    },
+    "sqlAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password of the SQL admin account. Only required if a new Azure SQL server has to be deployed. Leave blank to use existing Azure SQL Server."
+      }
+    },
+    "databaseName": {
+      "type": "string"
+    },
+    "skuName": {
+      "type": "string",
+      "allowedValues": [
+        "Basic",
+        "Standard",
+        "Premium"
+      ]
+    },
+    "maxSizeBytes": {
+      "type": "int"
+    },
+
+    "collationName": {
+      "type": "string",
+      "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
+    },
+    "zoneRedundant": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "partnerId": {
+      "type": "string",
+      "defaultValue": "pid-f498bab0-93f2-5083-86e4-53fe73edbc2a", // Analytics Creator Partner ID
+      "minLength": 0,
+      "maxLength": 40,
+      "metadata": {
+        "description": "The ID of the partner to be assigned to the SQL database. Starting with 'pid-...'"
+      }
+    }
+  },
+  "variables": {
+    "tierMapping": {
+      "B": "Basic",
+      "S": "Standard",
+      "P": "Premium"
+    },
+
+    "apiVersion": "2017-10-01-preview"
+  },
+  "resources": [
+    {
+      "condition": "[and(equals(length(parameters('partnerId')), 40), equals(toLower(substring(parameters('partnerId'), 0, 4)), 'pid-'))]",
+      "apiVersion": "2018-02-01",
+      "name": "[parameters('partnerId')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": []
+        }
+      }
+    },
+    {
+      "condition": "[and(greater(length(parameters('sqlAdminUsername')), 5), greater(length(parameters('sqlAdminPassword')), 5))]",
+      "type": "Microsoft.Sql/servers",
+      "name": "[parameters('serverName')]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[resourceGroup().location]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "administratorLogin": "[parameters('sqlAdminUsername')]",
+        "administratorLoginPassword": "[parameters('sqlAdminPassword')]",
+        "version": "12.0"
+      }
+    },
+    {
+      "condition": "[and(greater(length(parameters('sqlAdminUsername')), 5), greater(length(parameters('sqlAdminPassword')), 5))]",
+      "type": "Microsoft.Sql/servers/databases",
+      "name": "[concat(parameters('serverName'), '/', 'master')]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers/', parameters('serverName'))]"
+      ],
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases",
+      "name": "[concat(parameters('serverName'), '/', parameters('databaseName'))]",
+      "apiVersion": "[variables('apiVersion')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "collation": "[parameters('collationName')]",
+        "maxSizeBytes": "[parameters('maxSizeBytes')]",
+        "sampleName": "",
+        "zoneRedundant": "[parameters('zoneRedundant')]",
+        "licenseType": ""
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers/', parameters('serverName'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('serverName'), 'master')]"
+      ],
+      "sku": {
+        "name": "[parameters('skuName')]",
+        "tier": "[variables('tierMapping')[first(parameters('skuName'))]]"
+      }
+    }
+  ],
+  "outputs": {
+    "sqlServerName": {
+      "value": "[parameters('serverName')]",
+      "type": "string"
+    },
+    "databaseName": {
+      "value": "[parameters('databaseName')]",
+      "type": "string"
+    }
+  }
+}

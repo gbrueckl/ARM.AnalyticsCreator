@@ -1,0 +1,28 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serverName": {
+      "value": "gbtestsql01"
+    },
+
+    "databaseName": {
+      "value": "proddb01"
+    },
+    "maxSizeBytes": {
+      "value": 104857600
+    },
+    "skuName": {
+      "value": "Basic"
+    },
+    "collationName": {
+      "value": "SQL_Latin1_General_CP1_CI_AS"
+    },
+    "zoneRedundant": {
+      "value": false
+    },
+    "partnerId": {
+      "value": "pid-f498bab0-93f2-5083-86e4-53fe73edbc2a"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "serverName": {
+      "value": "gbtestsql01"
+    },
+
+    "sqlAdminName": {
+      "value": "localadmin"
+    },
+    "sqlAdminPassword": {
+      "value": "QUqualquer55__"
+    },
+
+
+
+    "partnerId": {
+      "value": "pid-f498bab0-93f2-5083-86e4-53fe73edbc2a"
+    }
+  }
+}
