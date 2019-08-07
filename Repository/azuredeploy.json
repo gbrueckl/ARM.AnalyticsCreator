@@ -19,12 +19,14 @@
     },
     "sqlAdminUsername": {
       "type": "string",
+      "defaultValue": "<useExisting>",
       "metadata": {
         "description": "Username of the SQL admin account. Only required if a new Azure SQL server has to be deployed. Leave blank to use existing Azure SQL Server without overwriting credentials."
       }
     },
     "sqlAdminPassword": {
       "type": "securestring",
+      "defaultValue": "<useExisting>",
       "metadata": {
         "description": "Password of the SQL admin account. Only required if a new Azure SQL server has to be deployed. Leave blank to use existing Azure SQL Server without overwriting credentials."
       }
@@ -61,7 +63,7 @@
       }
     },
     {
-      "condition": "[and(greater(length(parameters('sqlAdminUsername')), 5), greater(length(parameters('sqlAdminPassword')), 5))]",
+      "condition": "[and(not(equals(parameters('sqlAdminUsername'), '<useExisting>')), not(equals(parameters('sqlAdminPassword'), '<useExisting>')))]",
       "type": "Microsoft.Sql/servers",
       "name": "[parameters('serverName')]",
       "apiVersion": "[variables('apiVersion')]",
@@ -76,7 +78,7 @@
       }
     },
     {
-      "condition": "[and(greater(length(parameters('sqlAdminUsername')), 5), greater(length(parameters('sqlAdminPassword')), 5))]",
+      "condition": "[and(not(equals(parameters('sqlAdminUsername'), '<useExisting>')), not(equals(parameters('sqlAdminPassword'), '<useExisting>')))]",
       "type": "Microsoft.Sql/servers/databases",
       "name": "[concat(parameters('serverName'), '/', 'master')]",
       "apiVersion": "[variables('apiVersion')]",
