@@ -3,8 +3,13 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "serverName": {
-      "type": "string"
+      "type": "string",
+      "minLength": 5,
+      "metadata": {
+        "description": "Name of the Azure SQL Server that will be used. If it does not exist and AdminUsername/Password are supplied it will be created.."
+      }
     },
+
     "sqlAdminUsername": {
       "type": "string",
       "metadata": {
@@ -18,7 +23,11 @@
       }
     },
     "databaseName": {
-      "type": "string"
+      "type": "string",
+      "minLength": 3,
+      "metadata": {
+        "description": "Name of the database to be deployed."
+      }
     },
     "skuName": {
       "type": "string",
@@ -28,17 +37,27 @@
         "Premium"
       ]
     },
-    "maxSizeBytes": {
-      "type": "int"
+    "maxSizeGb": {
+      "type": "int",
+      "defaultValue":  10,
+      "metadata": {
+        "description": "Target size of the database in GB."
+      }
     },
 
     "collationName": {
       "type": "string",
-      "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
+      "defaultValue": "SQL_Latin1_General_CP1_CI_AS",
+      "metadata": {
+        "description": "Name of the collation to use for the database."
+      }
     },
     "zoneRedundant": {
       "type": "bool",
-      "defaultValue": false
+      "defaultValue": false,
+      "metadata": {
+        "description": "Whether the database should be zone redundant or not."
+      }
     }
   },
   "variables": {
@@ -99,7 +118,7 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "collation": "[parameters('collationName')]",
-        "maxSizeBytes": "[parameters('maxSizeBytes')]",
+        "maxSizeBytes": "[mul(mul(parameters('maxSizeGb'), 1024), 1024)]",
         "sampleName": "",
         "zoneRedundant": "[parameters('zoneRedundant')]",
         "licenseType": ""

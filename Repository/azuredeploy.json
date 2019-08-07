@@ -3,21 +3,30 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "serverName": {
-      "type": "string"
+      "type": "string",
+      "minLength": 5,
+      "metadata": {
+        "description": "Name of the Azure SQL Server that will be used. If it does not exist and AdminUsername/Password are supplied it will be created.."
+      }
     },
     "repositoryName": {
-      "type": "string"
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 25,
+      "metadata": {
+        "description": "Name of the repository that will be created."
+      }
     },
     "sqlAdminUsername": {
       "type": "string",
       "metadata": {
-        "description": "Username of the SQL admin account. Only required if a new Azure SQL server has to be deployed. Leave blank to use existing Azure SQL Server."
+        "description": "Username of the SQL admin account. Only required if a new Azure SQL server has to be deployed. Leave blank to use existing Azure SQL Server without overwriting credentials."
       }
     },
     "sqlAdminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Password of the SQL admin account. Only required if a new Azure SQL server has to be deployed. Leave blank to use existing Azure SQL Server."
+        "description": "Password of the SQL admin account. Only required if a new Azure SQL server has to be deployed. Leave blank to use existing Azure SQL Server without overwriting credentials."
       }
     }
   },
