@@ -95,7 +95,7 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "collation": "SQL_Latin1_General_CP1_CI_AS",
-        "maxSizeBytes": 1073741824, 
+        "maxSizeBytes": 1073741824,
         "sampleName": "",
         "zoneRedundant": false,
         "licenseType": ""
@@ -116,7 +116,7 @@
       "location": "[resourceGroup().location]",
       "properties": {
         "collation": "SQL_Latin1_General_CP1_CI_AS",
-        "maxSizeBytes": 52428800, 
+        "maxSizeBytes": 104857600,
         "sampleName": "",
         "zoneRedundant": false,
         "licenseType": ""
